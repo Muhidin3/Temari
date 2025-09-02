@@ -1,0 +1,51 @@
+bcrypy password install
+middleware
+mycourses:explain a lot
+jwt token
+new Course
+categories page
+instructors page
+about page
+
+
+
+
+
+
+
+
+pages
+public:
+    landingpage/home
+    courses
+    search result
+    course detail
+    about
+    contactus
+    login/register
+studentpages:
+    dashboard
+    mycourses
+    each course detail
+    assignments/questions/quizes
+    certificate
+    whishlist
+    profile setting
+    payment
+    notification
+    message/ b/n student and instructors
+instructor page:
+    dashboard
+    create course
+    couse management
+    analytics
+    student disscussion
+    messages
+    payout/earning
+admin
+    admin dashboard
+    user management
+    couse management
+    transactions/payments
+    reports&analytics
+    
