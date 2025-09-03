@@ -1,6 +1,6 @@
 import type { Document, Types } from "mongoose"
 
-// User Types
+//  User Types
 export interface IUser extends Document {
   _id: Types.ObjectId
   email: string
