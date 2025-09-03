@@ -13,9 +13,9 @@ import { Navigation } from "@/components/navigation"
 import { Search, Filter, Star, Users, Clock, Play, Heart, ShoppingCart, Grid3X3, List, FilterIcon } from "lucide-react"
 import { Close } from "@radix-ui/react-toast"
 import CourseCard from "@/components/CourseCard"
-
+import { useLang } from "@/contexts/LanguageContext"
 export default function CoursesPage() {
-  const [language] = useState("en")
+  const {language} = useLang()
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
   const [priceRange, setPriceRange] = useState([0, 5000])
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])

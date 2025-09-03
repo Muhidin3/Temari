@@ -1,25 +1,49 @@
-import connectDB from "@/lib/connenctDB";
-import { User } from "@/Models/Models";
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server"
+import bcrypt from "bcrypt"
+import connectDB from "@/lib/connenctDB"
+import User from "@/models/User"
 
-export async function POST(req:NextRequest){
+export async function POST(request: NextRequest) {
+  try {
     await connectDB()
-    
-    const data = await req.json()
-    try{
-        const checkUser = await User.findOne({name:data.name})
-        if (checkUser) {
-            return NextResponse.json({message:`A User with name ${data.name} exist please use othername `})
-        }
-        const checkUser2 = await User.findOne({email:data.email})
-        if (checkUser2) {
-            return NextResponse.json({message:` this email exist please use another`})
-        }
-        const user = new User(data)
-        await user.save()
-        return NextResponse.json({message:'sucess',user})
+
+    const { email, password, firstName, lastName, role = "student" } = await request.json()
+
+    // Validate required fields
+    if (!email || !password || !firstName || !lastName) {
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
-    catch(error){
-        return NextResponse.json({message:'Server Error',error},{status:500})
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ email })
+    if (existingUser) {
+      return NextResponse.json({ error: "User already exists" }, { status: 400 })
     }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 12)
+
+    // Create user
+    const user = await User.create({
+      email,
+      password: hashedPassword,
+      firstName,
+      lastName,
+      role,
+    })
+
+    // Remove password from response
+    const { password: _, ...userWithoutPassword } = user.toObject()
+
+    return NextResponse.json(
+      {
+        message: "User created successfully",
+        user: userWithoutPassword,
+      },
+      { status: 201 },
+    )
+  } catch (error) {
+    console.error("Registration error:", error)
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+  }
 }

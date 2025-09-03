@@ -30,9 +30,9 @@ import {
   Zap,
   Shield,
 } from "lucide-react"
-
+import { useLang } from "@/contexts/LanguageContext"
 export default function CourseDetailPage() {
-  const [language] = useState("en")
+  const {language} = useLang()
   const [expandedSections, setExpandedSections] = useState<number[]>([0])
   const [activeTab, setActiveTab] = useState("overview")
 

@@ -13,10 +13,10 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Navigation } from "@/components/navigation"
 import { BookOpen, Mail, Lock, Eye, EyeOff, Chrome, Facebook, Apple, User, Github } from "lucide-react"
 import { redirect } from "next/navigation"
-
+import { useLang } from "@/contexts/LanguageContext"
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false)
-  const [language] = useState("en")
+  const {language} = useLang()
   const [isLoading, setIsLoading] = useState(false)
 
   const [name,setName] = useState('')

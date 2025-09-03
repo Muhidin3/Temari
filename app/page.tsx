@@ -23,9 +23,11 @@ import {
   ArrowRight,
 } from "lucide-react"
 import CourseCard from "@/components/CourseCard"
+import { redirect } from "next/navigation"
+import { useLang } from "@/contexts/LanguageContext"
 
 export default function HomePage() {
-  const [language] = useState("en")
+  const {language} = useLang()
 
   const featuredCourses = [
     {

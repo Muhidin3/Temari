@@ -5,9 +5,9 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Search, Grid3X3, List } from "lucide-react"
 import CourseCard from "@/components/CourseCard"
-
+import { useLang } from "@/contexts/LanguageContext"
 export default function MycoursesPage() {
-  const [language] = useState("en")
+  const {language} = useLang()
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
 
   const courses = [

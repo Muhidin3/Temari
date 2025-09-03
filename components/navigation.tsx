@@ -31,23 +31,29 @@ import {
   Settings,
   CreditCard,
   Award,
+  LayoutDashboard,
+  LayoutDashboardIcon,
 } from "lucide-react"
 import { useTheme } from "next-themes"
+import { useAuth } from "@/contexts/AuthContext"
+import { useLang } from "@/contexts/LanguageContext"
 
 export function Navigation() {
   const pathname = usePathname()
   const { theme, setTheme } = useTheme()
-  const [language, setLanguage] = useState("en")
   const [cartItems] = useState(3)
   const [wishlistItems] = useState(5)
   const [notifications] = useState(2)
+  const {user,logout} = useAuth()
+  const {changeLang,language} = useLang()
 
   const navItems = [
     { href: "/", label: "Home", labelAm: "ቤት" },
     { href: "/courses", label: "Courses", labelAm: "ኮርሶች" },
     { href: "/categories", label: "Categories", labelAm: "ምድቦች" },
-    { href: "/instructors", label: "Instructors", labelAm: "አስተማሪዎች" },
+    // { href: "/instructors", label: "Instructors", labelAm: "አስተማሪዎች" },
     { href: "/about", label: "About", labelAm: "ስለ እኛ" },
+    { href: "/contact", label: "Contact us", labelAm: "ስለ እኛ" },
   ]
 
   const isActive = (href: string) => pathname === href
@@ -93,7 +99,7 @@ export function Navigation() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setLanguage(language === "en" ? "am" : "en")}
+              onClick={() => changeLang(language === "en" ? "am" : "en")}
               className="hidden sm:flex"
             >
               <Globe className="h-4 w-4 mr-1" />
@@ -150,19 +156,29 @@ export function Navigation() {
               <DropdownMenuContent className="w-56" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">John Doe</p>
-                    <p className="text-xs leading-none text-muted-foreground">john@example.com</p>
+                    <p className="text-sm font-medium leading-none">{user?.name || ''}</p>
+                    <p className="text-xs leading-none text-muted-foreground">{user?.email||''}</p>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <User className="mr-2 h-4 w-4" />
-                  <span>{language === "am" ? "መገለጫ" : "Profile"}</span>
-                </DropdownMenuItem>
+                  <Link href={'/dashboard'}>
+                    <DropdownMenuItem>
+                        <LayoutDashboardIcon className="mr-2 h-4 w-4" />
+                        <span>{language === "am" ? "መገለጫ" : "DashBoard"}</span>
+                    </DropdownMenuItem>
+                  </Link>
+                  <Link href={'/profile'}>
+                    <DropdownMenuItem>
+                      <User className="mr-2 h-4 w-4" />
+                      <span>{language === "am" ? "መገለጫ" : "Profile"}</span>
+                    </DropdownMenuItem>
+                  </Link>
+                  <Link href={'mycourses'}>
                 <DropdownMenuItem>
                   <GraduationCap className="mr-2 h-4 w-4" />
                   <span>{language === "am" ? "የእኔ ኮርሶች" : "My Courses"}</span>
                 </DropdownMenuItem>
+                  </Link>
                 <DropdownMenuItem>
                   <Award className="mr-2 h-4 w-4" />
                   <span>{language === "am" ? "የምስክር ወረቀቶች" : "Certificates"}</span>
@@ -176,10 +192,10 @@ export function Navigation() {
                   <span>{language === "am" ? "ቅንብሮች" : "Settings"}</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>{language === "am" ? "ውጣ" : "Log out"}</span>
-                </DropdownMenuItem>
+                  <DropdownMenuItem onClick={()=>logout()}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>{language === "am" ? "ውጣ" : "Log out"}</span>
+                  </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 

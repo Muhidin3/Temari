@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -11,17 +10,23 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Separator } from "@/components/ui/separator"
 import { Checkbox } from "@/components/ui/checkbox"
 import { BookOpen, Mail, Lock, Eye, EyeOff, Chrome, Facebook, Apple } from "lucide-react"
-
+import { useAuth } from "@/contexts/AuthContext"
+import { useLang } from "@/contexts/LanguageContext"
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
-  const [language] = useState("en")
+  const {language} = useLang()
   const [isLoading, setIsLoading] = useState(false)
-
+  const [email,setEmail] = useState<string>('')
+  const [password,setPassword] = useState<string>('')
+  const {login} = useAuth()
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
+    const res = login({email,password})
+    // console.log(res)
     // Simulate API call
-    setTimeout(() => setIsLoading(false), 2000)
+    // setTimeout(() => setIsLoading(false), 2000)
   }
 
   return (
@@ -33,7 +38,7 @@ export default function LoginPage() {
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-abuki-primary">
                 <BookOpen className="h-6 w-6 text-white" />
               </div>
-              <span className="text-2xl font-bold text-abuki-primary">Abuki</span>
+              <span className="text-2xl font-bold text-abuki-primary">Temari</span>
             </div>
             <h1 className="text-3xl font-bold mb-2">{language === "am" ? "እንኳን ደህና መጡ" : "Welcome Back"}</h1>
             <p className="text-muted-foreground">
@@ -61,6 +66,9 @@ export default function LoginPage() {
                       placeholder={language === "am" ? "ኢሜልዎን ያስገቡ" : "Enter your email"}
                       className="pl-10"
                       required
+                      value={email}
+                      onChange={(e)=>setEmail(e.target.value)}
+
                     />
                   </div>
                 </div>
@@ -75,6 +83,8 @@ export default function LoginPage() {
                       placeholder={language === "am" ? "የይለፍ ቃልዎን ያስገቡ" : "Enter your password"}
                       className="pl-10 pr-10"
                       required
+                      value={password}
+                      onChange={(e)=>setPassword(e.target.value)}
                     />
                     <Button
                       type="button"
