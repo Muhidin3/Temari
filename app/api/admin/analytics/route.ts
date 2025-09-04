@@ -1,9 +1,9 @@
 import { type NextRequest, NextResponse } from "next/server"
 import connectDB from "@/lib/connenctDB"
-import User from "@/models/User"
-import Course from "@/models/Course"
-import Enrollment from "@/models/Enrollment"
-import Payment from "@/models/Payment"
+import User from "@/app/models/User"
+import Course from "@/app/models/Course"
+import Enrollment from "@/app/models/Enrollment"
+import Payment from "@/app/models/Payment"
 import { AuthenticatedRequest, authMiddleware, verifyToken } from "@/lib/auth"
 
 export async function GET(request: NextRequest) {

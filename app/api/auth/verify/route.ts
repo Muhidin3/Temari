@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken"
-import User from "@/models/User";
+import User from "@/app/models/User";
 
 export const POST = async (req:NextRequest)=>{
     const {token} = await req.json()

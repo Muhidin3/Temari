@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server"
 import connectDB from "@/lib/connenctDB"
-import Enrollment from "@/models/Enrollment"
-import Course from "@/models/Course"
+import Enrollment from "@/app/models/Enrollment"
+import Course from "@/app/models/Course"
 import { AuthenticatedRequest, authMiddleware, verifyToken } from "@/lib/auth"
 
 export async function POST(request: NextRequest) {

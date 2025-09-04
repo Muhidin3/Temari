@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import connectDB from "@/lib/connenctDB"
-import Wishlist from "@/models/Wishlist"
+import Wishlist from "@/app/models/Wishlist"
 import { AuthenticatedRequest, authMiddleware, verifyToken } from "@/lib/auth"
 
 export async function GET(request: NextRequest) {

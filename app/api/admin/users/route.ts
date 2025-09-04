@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import connectDB from "@/lib/connenctDB"
-import User from "@/models/User"
+import User from "@/app/models/User"
 import { AuthenticatedRequest, authMiddleware, verifyToken } from "@/lib/auth"
 
 export async function GET(request: NextRequest) {

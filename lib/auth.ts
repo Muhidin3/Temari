@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import jwt from "jsonwebtoken"
 import connectDB from "./connenctDB"
-import User from "@/models/User"
+import User from "@/app/models/User"
 
 export interface DecodedUser {
   userId: string

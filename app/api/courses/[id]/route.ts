@@ -1,9 +1,9 @@
 import { type NextRequest, NextResponse } from "next/server"
 import connectDB from "@/lib/connenctDB"
-import Lesson from "@/models/Lesson"
-import Review from "@/models/Review"
+import Lesson from "@/app/models/Lesson"
+import Review from "@/app/models/Review"
 import { AuthenticatedRequest, authMiddleware, verifyToken } from "@/lib/auth"
-import Course from "@/models/Course"
+import Course from "@/app/models/Course"
 
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   return authMiddleware()(async(req:AuthenticatedRequest)=>{

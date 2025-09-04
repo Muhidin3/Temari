@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
-import Course from "@/models/Course"
+import Course from "@/app/models/Course"
 import connectDB from "@/lib/connenctDB"
 import { AuthenticatedRequest, authMiddleware, verifyToken } from "@/lib/auth"
 
