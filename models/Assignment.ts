@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose"
-import type { IAssignment } from "@/types/types"
+import type { IAssignment } from "@/types/database"
 
 const AssignmentSchema = new Schema<IAssignment>(
   {

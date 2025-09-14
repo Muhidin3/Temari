@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose"
-import type { IPayment } from "@/types/types"
+import type { IPayment } from "@/types/database"
 
 const PaymentSchema = new Schema<IPayment>(
   {

@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose"
-import type { IQuiz } from "@/types/types"
+import type { IQuiz } from "@/types/database"
 
 const QuizSchema = new Schema<IQuiz>(
   {

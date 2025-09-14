@@ -6,9 +6,9 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Navigation } from "@/components/navigation"
 import { Users, BookOpen, Award, Globe, Heart, Zap, TrendingUp, CheckCircle } from "lucide-react"
-import { useLang } from "@/contexts/LanguageContext"
+
 export default function AboutPage() {
-  const {language} = useLang()
+  const [language] = useState("en")
 
   const stats = [
     {
@@ -139,10 +139,10 @@ export default function AboutPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      
+      <Navigation />
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-abuki-light via-white to-abuki-light/50 py-20 dark:from-slate-950 dark:bg-gradient-to-b dark:to-abuki-primary">
+      <section className="relative overflow-hidden bg-gradient-to-br from-abuki-light via-white to-abuki-light/50 py-20">
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
@@ -251,7 +251,7 @@ export default function AboutPage() {
       </section>
 
       {/* Values */}
-      <section className="py-20 bg-muted/30 dark:bg-gradient-to-b dark:from-slate-900 dark:to-slate-900 dark:via-abuki-primary/50">
+      <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">{language === "am" ? "የእኛ እሴቶች" : "Our Values"}</h2>
@@ -262,7 +262,7 @@ export default function AboutPage() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {values.map((value, index) => (
-              <Card key={index} className="text-center hover:shadow-lg transition-shadow dark:bg-slate-900 dark:text-white">
+              <Card key={index} className="text-center hover:shadow-lg transition-shadow">
                 <CardContent className="p-6">
                   <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 bg-muted`}>
                     <value.icon className={`h-8 w-8 ${value.color}`} />

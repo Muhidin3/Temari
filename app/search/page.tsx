@@ -12,10 +12,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Slider } from "@/components/ui/slider"
 import { Navigation } from "@/components/navigation"
 import { Search, Filter, Star, Users, Clock, Play, Heart, ShoppingCart, Grid3X3, List, X } from "lucide-react"
-import { useLang } from "@/contexts/LanguageContext"
+
 export default function SearchPage() {
   const searchParams = useSearchParams()
-  const {language} = useLang()
+  const [language] = useState("en")
   const [searchQuery, setSearchQuery] = useState(searchParams?.get("q") || "")
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
   const [priceRange, setPriceRange] = useState([0, 5000])
@@ -150,7 +150,7 @@ export default function SearchPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      
+      <Navigation />
 
       <div className="container mx-auto px-4 py-8">
         {/* Header */}

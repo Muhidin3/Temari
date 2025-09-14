@@ -1,48 +1,116 @@
 import { type NextRequest, NextResponse } from "next/server"
+// import bcrypt from "bcryptjs"
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
-import connectDB from "@/lib/connenctDB"
-import User from "@/app/models/User"
+import dbConnect from "@/lib/mongodb"
+import User from "@/models/User"
+import type { ApiResponse } from "@/types/database"
 
 export async function POST(request: NextRequest) {
   try {
-    await connectDB()
+    await dbConnect()
 
     const { email, password } = await request.json()
 
-    // Validate required fields
+    // Validation
     if (!email || !password) {
-      return NextResponse.json({ error: "Email and password are required" }, { status: 400 })
+      return NextResponse.json<ApiResponse>(
+        {
+          success: false,
+          message: "Email and password are required",
+        },
+        { status: 400 },
+      )
     }
 
-    // Find user
-    const user = await User.findOne({ email })
+    // Find user and include password for comparison
+    const user = await User.findOne({ email }).select("+password")
+
     if (!user) {
-      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 })
+      return NextResponse.json<ApiResponse>(
+        {
+          success: false,
+          message: "Invalid email or password",
+        },
+        { status: 401 },
+      )
     }
 
-    // Check password
-    const isPasswordValid = await bcrypt.compare(password, user.password)
-    if (!isPasswordValid) {
-      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 })
+    // Check if user is active
+    if (!user.isActive) {
+      return NextResponse.json<ApiResponse>(
+        {
+          success: false,
+          message: "Account is deactivated. Please contact support.",
+        },
+        { status: 401 },
+      )
     }
+
+    // Compare password
+    const isPasswordValid = await bcrypt.compare(password, user.password)
+
+    if (!isPasswordValid) {
+      return NextResponse.json<ApiResponse>(
+        {
+          success: false,
+          message: "Invalid email or password",
+        },
+        { status: 401 },
+      )
+    }
+
+    // Update last login
+    user.lastLogin = new Date()
+    await user.save()
 
     // Generate JWT token
-    const token = jwt.sign({ userId: user._id, email: user.email, role: user.role }, process.env.JWT_SECRET!, {
-      expiresIn: "7d",
-    })
+    const token = jwt.sign(
+      {
+        userId: user._id,
+        email: user.email,
+        role: user.role,
+      },
+      process.env.JWT_SECRET!,
+      { expiresIn: "7d" },
+    )
 
     // Remove password from response
-    const { password: _, ...userWithoutPassword } = user.toObject()
+    const userResponse = {
+      _id: user._id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      role: user.role,
+      avatar: user.avatar,
+      language: user.language,
+      isEmailVerified: user.isEmailVerified,
+    }
 
-    console.log('login sucessful in backend')
-    return NextResponse.json({
+    const response = NextResponse.json({
+      success: true,
       message: "Login successful",
+      user: userResponse,
       token,
-      user: userWithoutPassword,
+      
     })
+
+    // Set HTTP-only cookie
+    response.cookies.set("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60, // 7 days
+    })
+    return response
   } catch (error) {
     console.error("Login error:", error)
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    return NextResponse.json<ApiResponse>(
+      {
+        success: false,
+        message: "Internal server error",
+      },
+      { status: 500 },
+    )
   }
 }

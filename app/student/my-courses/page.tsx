@@ -9,9 +9,9 @@ import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Navigation } from "@/components/navigation"
 import { Play, BookOpen, Clock, Award, Star, ChevronRight, Download, Calendar } from "lucide-react"
-import { useLang } from "@/contexts/LanguageContext"
+
 export default function MyCoursesPage() {
-  const {language} = useLang()
+  const [language] = useState("en")
   const [activeTab, setActiveTab] = useState("all")
 
   const enrolledCourses = [
@@ -139,7 +139,7 @@ export default function MyCoursesPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      
+      <Navigation />
 
       <div className="container mx-auto px-4 py-8">
         {/* Header */}

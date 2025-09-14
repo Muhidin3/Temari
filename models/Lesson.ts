@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose"
-import type { ILesson } from "@/types/types"
+import type { ILesson } from "@/types/database"
 
 const LessonSchema = new Schema<ILesson>(
   {
@@ -7,6 +7,10 @@ const LessonSchema = new Schema<ILesson>(
       type: Schema.Types.ObjectId,
       ref: "Course",
       required: true,
+    },
+    section:{
+      type:String,
+      required:true
     },
     title: {
       type: String,
@@ -29,6 +33,10 @@ const LessonSchema = new Schema<ILesson>(
     order: {
       type: Number,
       required: true,
+    },
+    isFree:{
+      type:Boolean,
+      default:false
     },
     resources: [
       {
@@ -61,4 +69,8 @@ const LessonSchema = new Schema<ILesson>(
 // Indexes
 LessonSchema.index({ course: 1, order: 1 })
 
+// if(mongoose.models.Lesson){
+//   delete mongoose.models.Lesson
+//   console.log('model---------------lesson is -----------------deleted')
+// }
 export default mongoose.models.Lesson || mongoose.model<ILesson>("Lesson", LessonSchema)

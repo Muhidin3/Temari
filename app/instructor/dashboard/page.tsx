@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -9,9 +9,10 @@ import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Navigation } from "@/components/navigation"
 import { DollarSign, Users, BookOpen, Star, TrendingUp, TrendingDown, Eye, Play, MessageCircle, Calendar, BarChart3, PieChart, Plus, Edit, Settings } from 'lucide-react'
-import { useLang } from "@/contexts/LanguageContext"
+import Afetch from "@/lib/Afetch"
+
 export default function InstructorDashboard() {
-  const {language} = useLang()
+  const [language] = useState("en")
   const [timeRange, setTimeRange] = useState("month")
 
   const stats = [
@@ -53,7 +54,7 @@ export default function InstructorDashboard() {
     },
   ]
 
-  const courses = [
+  const [courses,setCourses] = useState([
     {
       id: 1,
       title: "Complete Web Development Bootcamp",
@@ -93,7 +94,7 @@ export default function InstructorDashboard() {
       views: 8900,
       completionRate: 72,
     },
-  ]
+  ])
 
   const recentReviews = [
     {
@@ -125,9 +126,30 @@ export default function InstructorDashboard() {
     { month: "Jun", revenue: 28000, enrollments: 102, margin: 21800 },
   ]
 
+  useEffect(()=>{
+     (async()=>{
+        const ress = await Afetch('/api/instructor/courses').then(async(d)=>(await d.json()))
+        const res = ress.data
+        setCourses(
+          res.map(({title,titleAm,status,rating,...course}:any)=>({
+            id: course._id,
+            title,
+            titleAm,
+            students: course.totalStudents,
+            revenue: "30,850 ETB",
+            rating,
+            reviews: 456,
+            status,
+            lastUpdated: "2024-01-15",
+            views: 15420,
+            completionRate: 78,
+          }))
+        )
+     })()
+  },[])
   return (
     <div className="min-h-screen bg-background">
-      
+      <Navigation />
 
       <div className="container mx-auto px-4 py-8">
         {/* Header */}

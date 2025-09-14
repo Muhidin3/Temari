@@ -7,7 +7,11 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
+    domains: ['placeholder.svg'],
     unoptimized: true,
+  },
+  experimental: {
+    appDir: true,
   },
 }
 

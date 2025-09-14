@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose"
-import type { ISubmission } from "@/types/types"
+import type { ISubmission } from "@/types/database"
 
 const SubmissionSchema = new Schema<ISubmission>({
   assignment: {

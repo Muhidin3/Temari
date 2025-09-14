@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -30,13 +30,14 @@ import {
   Zap,
   Shield,
 } from "lucide-react"
-import { useLang } from "@/contexts/LanguageContext"
-export default function CourseDetailPage() {
-  const {language} = useLang()
+import Afetch from "@/lib/Afetch"
+
+export default function CourseDetailPage({params}:{params:{id:string}}) {
+  const [language] = useState("en")
   const [expandedSections, setExpandedSections] = useState<number[]>([0])
   const [activeTab, setActiveTab] = useState("overview")
-
-  const course = {
+  
+  const [course,setCourse] = useState({
     id: 1,
     title: "Complete Web Development Bootcamp",
     titleAm: "ሙሉ ዌብ ዲቨሎፕመንት ኮርስ",
@@ -74,9 +75,9 @@ export default function CourseDetailPage() {
     mobile: true,
     isNew: true,
     isBestseller: true,
-  }
+  })
 
-  const curriculum = [
+  const [curriculum,setCuriculum] = useState([
     {
       title: "Introduction to Web Development",
       titleAm: "የዌብ ዲቨሎፕመንት መግቢያ",
@@ -155,7 +156,7 @@ export default function CourseDetailPage() {
         { title: "Responsive Design", titleAm: "ተላላፊ ዲዛይን", duration: "50 min", type: "video", free: false },
       ],
     },
-  ]
+  ])
 
   const reviews = [
     {
@@ -180,12 +181,86 @@ export default function CourseDetailPage() {
     },
   ]
 
+  useEffect(()=>{
+    (async()=>{
+      const {id} = await params
+      const res = await Afetch(`/api/courses/${id}`).then(async(data)=> await data.json())
+      const course = res.data
+      const lessons = res.lessons
+      // console.log(course)
+      setCourse({
+        id: 1,
+        title: course.title,
+        titleAm: course.titleAm,
+        subtitle: "*Learn HTML, CSS, JavaScript, React, Node.js and become a full-stack developer*",
+        subtitleAm: "*HTML, CSS, JavaScript, React, Node.js ይማሩ እና ሙሉ-ስታክ ዲቨሎፐር ይሁኑ*",
+        instructor: {
+          name: course.instructor.firstName + ' ' + course.instructor.lastName,
+          title: "*Senior Full Stack Developer*",
+          titleAm: "ከፍተኛ ሙሉ ስታክ ዲቨሎፐር",
+          avatar: "/placeholder.svg?height=100&width=100",
+          rating: 4.9,
+          students: 25000,
+          courses: 12,
+          bio: "Dr. Abebe has 10+ years of experience in web development and has taught thousands of students.",
+          bioAm: "ዶክተር አበበ በዌብ ዲቨሎፕመንት ላይ ከ10+ አመት ልምድ አለው እና በሺዎች የሚቆጠሩ ተማሪዎችን አስተምሯል።",
+        },
+        rating: course.rating,
+        totalRatings: course.totalRatings,
+        students: course.totalStudents,
+        duration: course.duration,
+        lectures: 156,
+        articles: 12,
+        resources: 25,
+        price: course.price,
+        originalPrice: 4000,
+        discount: 38,
+        image: "/placeholder.svg?height=400&width=600",
+        videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        category: course.category.name,
+        level: course.level,
+        language: course.language,
+        lastUpdated: "2024-01-15",
+        certificate: true,
+        lifetime: true,
+        mobile: true,
+        isNew: true,
+        isBestseller: true,
+      })
+
+      // console.log(res.lessons)
+      const curr:any[] = []
+
+      course.sections.map((section:any)=>{
+        const lessons_ = (res.lessons.filter((lesson:any)=>lesson.section==section)).map((lesson:any,index:number)=>({
+          title: lesson.title,
+          titleAm: "ዌብ ዲቨሎፕመንት ምንድን ነው?",
+          duration: "15 min",
+          type: "video",
+          free: lesson.isFree,
+        }))
+        curr.push({
+          title: section,
+          titleAm: "የዌብ ዲቨሎፕመንት መግቢያ",
+          duration: "2 hours",
+          lectures: lessons_.length,
+          lessons: lessons_
+        })
+      })
+
+      // console.log(curr)
+      setCuriculum(curr)
+    })()
+  },[])
+
+
   const toggleSection = (index: number) => {
     setExpandedSections((prev) => (prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]))
   }
 
   return (
     <div className="min-h-screen bg-background">
+      <Navigation />
 
       <div className="container mx-auto px-4 py-8">
         <div className="grid lg:grid-cols-3 gap-8">
@@ -260,7 +335,7 @@ export default function CourseDetailPage() {
 
             {/* Course Tabs */}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-8">
-              <TabsList className="grid w-full grid-cols-4">
+              <TabsList className="grid w-full grid-cols-4 dark:bg-slate-800">
                 <TabsTrigger value="overview">{language === "am" ? "አጠቃላይ እይታ" : "Overview"}</TabsTrigger>
                 <TabsTrigger value="curriculum">{language === "am" ? "ስርዓተ ትምህርት" : "Curriculum"}</TabsTrigger>
                 <TabsTrigger value="instructor">{language === "am" ? "አስተማሪ" : "Instructor"}</TabsTrigger>
@@ -335,7 +410,7 @@ export default function CourseDetailPage() {
                         <div key={index} className="border rounded-lg">
                           <button
                             onClick={() => toggleSection(index)}
-                            className="w-full flex items-center justify-between p-4 text-left hover:bg-muted/50 transition-colors"
+                            className="w-full flex items-center justify-between p-4 text-left hover:bg-muted/50 transition-colors dark:hover:bg-slate-800"
                           >
                             <div className="flex items-center gap-3">
                               {expandedSections.includes(index) ? (

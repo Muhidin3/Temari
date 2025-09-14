@@ -9,12 +9,11 @@ import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Navigation } from "@/components/navigation"
 import { Play, BookOpen, Clock, Award, TrendingUp, Calendar, Target, Star, Users, ChevronRight, Download, BarChart3 } from 'lucide-react'
-import { useAuth } from "@/contexts/AuthContext"
-import { useLang } from "@/contexts/LanguageContext"
+import { useAuth } from "@/contexts/auth-context"
 
 export default function StudentDashboard() {
+  const [language] = useState("en")
   const {user} = useAuth()
-  const {language} = useLang()
 
   const enrolledCourses = [
     {
@@ -166,12 +165,12 @@ export default function StudentDashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      
+      <Navigation />
+
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">{language === "am" ? "የእኔ ዳሽቦርድ" : 'Welcome Back, '+user?.name?.split(' ')[0]}</h1>
-          {/* <h1 className="text-3xl font-bold mb-2">{language === "am" ? "የእኔ ዳሽቦርድ" : "My Dashboard"}</h1> */}
+          <h1 className="text-3xl font-bold mb-2">Welcome {user?.firstName}</h1>
           <p className="text-muted-foreground">
             {language === "am" ? "የትምህርት እድገትዎን ይከታተሉ እና ኮርሶችዎን ይቀጥሉ" : "Track your learning progress and continue your courses"}
           </p>
@@ -180,7 +179,7 @@ export default function StudentDashboard() {
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {stats.map((stat, index) => (
-            <Card key={index} className="dark:bg-slate-800 dark:text-white">
+            <Card key={index}>
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -196,9 +195,9 @@ export default function StudentDashboard() {
 
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Main Content */}
-          <div className="lg:col-span-2 ">
-            <Tabs defaultValue="courses" className="space-y-6 ">
-              <TabsList className="grid w-full grid-cols-3 dark:bg-slate-800 dark:text-white">
+          <div className="lg:col-span-2">
+            <Tabs defaultValue="courses" className="space-y-6">
+              <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="courses">{language === "am" ? "ኮርሶች" : "My Courses"}</TabsTrigger>
                 <TabsTrigger value="progress">{language === "am" ? "እድገት" : "Progress"}</TabsTrigger>
                 <TabsTrigger value="certificates">{language === "am" ? "ሰርተፊኬቶች" : "Certificates"}</TabsTrigger>
@@ -206,7 +205,7 @@ export default function StudentDashboard() {
 
               <TabsContent value="courses">
                 <div className="space-y-6">
-                  <div className="flex items-center justify-between ">
+                  <div className="flex items-center justify-between">
                     <h2 className="text-2xl font-semibold">{language === "am" ? "የእኔ ኮርሶች" : "My Courses"}</h2>
                     <Button variant="outline" asChild>
                       <Link href="/courses">
@@ -216,9 +215,9 @@ export default function StudentDashboard() {
                     </Button>
                   </div>
 
-                  <div className="space-y-4 ">
+                  <div className="space-y-4">
                     {enrolledCourses.map((course) => (
-                      <Card key={course.id} className="hover:shadow-md transition-shadow dark:bg-slate-900 dark:text-white">
+                      <Card key={course.id} className="hover:shadow-md transition-shadow">
                         <CardContent className="p-6">
                           <div className="flex gap-4">
                             <img
@@ -300,8 +299,8 @@ export default function StudentDashboard() {
                 <div className="space-y-6">
                   <h2 className="text-2xl font-semibold">{language === "am" ? "የትምህርት እድገት" : "Learning Progress"}</h2>
 
-                  <div className="grid md:grid-cols-2 gap-6 ">
-                    <Card className="dark:bg-slate-900 dark:text-white">
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <Card>
                       <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                           <BarChart3 className="h-5 w-5" />
@@ -323,7 +322,7 @@ export default function StudentDashboard() {
                       </CardContent>
                     </Card>
 
-                    <Card className="dark:bg-slate-900 dark:text-white">
+                    <Card>
                       <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                           <Target className="h-5 w-5" />
@@ -364,11 +363,11 @@ export default function StudentDashboard() {
                 <div className="space-y-6">
                   <h2 className="text-2xl font-semibold">{language === "am" ? "የእኔ ሰርተፊኬቶች" : "My Certificates"}</h2>
 
-                  <div className="grid md:grid-cols-2 gap-6 ">
+                  <div className="grid md:grid-cols-2 gap-6">
                     {enrolledCourses
                       .filter((course) => course.certificate)
                       .map((course) => (
-                        <Card key={course.id} className="hover:shadow-md transition-shadow dark:bg-slate-900 dark:text-white">
+                        <Card key={course.id} className="hover:shadow-md transition-shadow">
                           <CardContent className="p-6">
                             <div className="flex items-center gap-4 mb-4">
                               <div className="w-12 h-12 bg-abuki-primary/10 rounded-full flex items-center justify-center">
@@ -400,7 +399,7 @@ export default function StudentDashboard() {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Recent Activity */}
-            <Card className="dark:bg-slate-900 dark:text-white">
+            <Card>
               <CardHeader>
                 <CardTitle className="text-lg">{language === "am" ? "የቅርብ ጊዜ እንቅስቃሴ" : "Recent Activity"}</CardTitle>
               </CardHeader>
@@ -423,7 +422,7 @@ export default function StudentDashboard() {
             </Card>
 
             {/* Achievements */}
-            <Card className="dark:bg-slate-900 dark:text-white">
+            <Card>
               <CardHeader>
                 <CardTitle className="text-lg">{language === "am" ? "ስኬቶች" : "Achievements"}</CardTitle>
               </CardHeader>
@@ -455,7 +454,7 @@ export default function StudentDashboard() {
             </Card>
 
             {/* Learning Streak */}
-            <Card className="dark:bg-slate-900 dark:text-white">
+            <Card>
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
                   🔥 {language === "am" ? "የትምህርት ተከታታይነት" : "Learning Streak"}

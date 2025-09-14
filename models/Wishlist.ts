@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose"
-import type { IWishlist } from "@/types/types"
+import type { IWishlist } from "@/types/database"
 
 const WishlistSchema = new Schema<IWishlist>(
   {

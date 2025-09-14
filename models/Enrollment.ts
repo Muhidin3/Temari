@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose"
-import type { IEnrollment } from "@/types/types"
+import type { IEnrollment } from "@/types/database"
 
 const EnrollmentSchema = new Schema<IEnrollment>({
   student: {

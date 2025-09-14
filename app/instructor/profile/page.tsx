@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -8,12 +8,14 @@ import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Navigation } from "@/components/navigation"
-import { Star, Users, BookOpen, Award, MapPin, Calendar, Globe, Linkedin, Twitter, Mail, Phone, Edit, Share2, Play, Clock, TrendingUp, MessageCircle } from 'lucide-react'
-import { useLang } from "@/contexts/LanguageContext"
-export default function InstructorProfile() {
-  const {language} = useLang()
+import { Star, Users, BookOpen, Award, MapPin, Calendar, Globe, Linkedin, Twitter, Mail, Phone, Edit, Share2, Play, Clock, TrendingUp, MessageCircle, X } from 'lucide-react'
+import { useAuth } from "@/contexts/auth-context"
+import Afetch from "@/lib/Afetch"
 
-  const instructorData = {
+export default function InstructorProfile() {
+  const [language] = useState("en")
+
+  const [instructorData,setInstructorData] = useState({
     name: "Dr. Abebe Kebede",
     title: "Senior Full Stack Developer & Tech Educator",
     titleAm: "ከፍተኛ ሙሉ ስታክ ዲቨሎፐር እና የቴክኖሎጂ አስተማሪ",
@@ -66,9 +68,9 @@ export default function InstructorProfile() {
         descriptionAm: "ዘመናዊ ቴክኖሎጂዎችን በመጠቀም በርካታ ዌብ አፕሊኬሽኖችን ማዳበር እና መጠበቅ",
       },
     ],
-  }
+  })
 
-  const courses = [
+  const [courses,setCourses] = useState([
     {
       id: 1,
       title: "Complete Web Development Bootcamp",
@@ -111,7 +113,7 @@ export default function InstructorProfile() {
       level: "Intermediate",
       isBestseller: true,
     },
-  ]
+  ])
 
   const achievements = [
     {
@@ -200,10 +202,32 @@ export default function InstructorProfile() {
       color: "text-purple-600",
     },
   ]
+  const {user} = useAuth()
+
+  useEffect(()=>{
+    (async()=>{
+      const res = await Afetch('/api/instructor/courses').then(async(d)=>(await d.json()).data)
+      const courses = res.map((course:any)=>({
+        id: course._id,
+        title: course.title,
+        titleAm: course.titleAm,
+        students: course.totalStudents,
+        rating: course.rating,
+        reviews: 456,
+        duration: course.duration,
+        price: course.price,
+        image: "/placeholder.svg?height=200&width=300",
+        category:course.category.name,
+        level: course.level,
+        isPopular: true,  
+      }))
+      setCourses(courses)
+    })()
+  },[])
 
   return (
     <div className="min-h-screen bg-background">
-      
+      <Navigation />
 
       <div className="container mx-auto px-4 py-8">
         {/* Header */}

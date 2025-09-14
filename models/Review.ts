@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose"
-import type { IReview } from "@/types/types"
+import type { IReview } from "@/types/database"
 
 const ReviewSchema = new Schema<IReview>(
   {

@@ -1,19 +1,19 @@
 import type React from "react"
-import "./globals.css"
 import type { Metadata } from "next"
-// import { Inter } from "next/font/google"
+import { Inter } from "next/font/google"
+import "./globals.css"
+import { AuthProvider } from "@/contexts/auth-context"
+import { LanguageProvider } from "@/contexts/language-context"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
-import { Navigation } from "@/components/navigation"
-import Footer from "@/components/Footer"
-import { Authprovider } from "@/contexts/AuthContext"
-import { LangProvider } from "@/contexts/LanguageContext"
+import { NotificationProvider } from "@/contexts/notification-context"
 
-// const inter = Inter({ subsets: ["latin"] })
+const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Temari - Ethiopian Learning Platform",
-  description: "Learn new skills with courses designed for Ethiopians",
+  title: "Abuki - Ethiopian Learning Platform",
+  description: "Learn and grow with Ethiopia's premier online learning platform",
+    generator: 'v0.app'
 }
 
 export default function RootLayout({
@@ -23,18 +23,17 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      {/* <body className={inter.className}> */}
-      <body>
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
-          <Authprovider>
-            <LangProvider>
-              <Navigation/>
-              {children}
-              <Footer/>
-              <Toaster />
-            </LangProvider>
-          </Authprovider>
-        </ThemeProvider>
+      <body className={inter.className}>
+        <NotificationProvider>
+          <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
+            <LanguageProvider>
+              <AuthProvider>
+                  {children}
+                <Toaster />
+              </AuthProvider>
+            </LanguageProvider>
+          </ThemeProvider>
+        </NotificationProvider>
       </body>
     </html>
   )

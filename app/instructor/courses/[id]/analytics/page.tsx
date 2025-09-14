@@ -9,9 +9,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Navigation } from "@/components/navigation"
 import { Eye, Users, Play, Clock, TrendingUp, TrendingDown, Star, MessageCircle, Download, Share2, BarChart3, PieChart, Calendar, Target, Award, DollarSign } from 'lucide-react'
-import { useLang } from "@/contexts/LanguageContext"
+
 export default function CourseAnalytics() {
-  const {language} = useLang()
+  const [language] = useState("en")
   const [timeRange, setTimeRange] = useState("30d")
 
   const courseData = {
@@ -124,7 +124,7 @@ export default function CourseAnalytics() {
 
   return (
     <div className="min-h-screen bg-background">
-      
+      <Navigation />
 
       <div className="container mx-auto px-4 py-8">
         {/* Header */}

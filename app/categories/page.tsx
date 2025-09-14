@@ -8,9 +8,9 @@ import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Navigation } from "@/components/navigation"
 import { Search, TrendingUp, Users, BookOpen, ArrowRight, Filter } from 'lucide-react'
-import { useLang } from "@/contexts/LanguageContext"
+
 export default function CategoriesPage() {
-  const {language} = useLang()
+  const [language] = useState("en")
   const [searchTerm, setSearchTerm] = useState("")
 
   const categories = [
@@ -134,7 +134,7 @@ export default function CategoriesPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      
+      <Navigation />
 
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
@@ -161,26 +161,26 @@ export default function CategoriesPage() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12 ">
-          <Card className="text-center dark:bg-slate-900 dark:text-white">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+          <Card className="text-center">
             <CardContent className="p-4">
               <div className="text-2xl font-bold text-abuki-primary">8</div>
               <div className="text-sm text-muted-foreground">{language === "am" ? "ምድቦች" : "Categories"}</div>
             </CardContent>
           </Card>
-          <Card className="text-center dark:bg-slate-900 dark:text-white">
+          <Card className="text-center">
             <CardContent className="p-4">
               <div className="text-2xl font-bold text-abuki-primary">4,740</div>
               <div className="text-sm text-muted-foreground">{language === "am" ? "ኮርሶች" : "Courses"}</div>
             </CardContent>
           </Card>
-          <Card className="text-center dark:bg-slate-900 dark:text-white">
+          <Card className="text-center">
             <CardContent className="p-4">
               <div className="text-2xl font-bold text-abuki-primary">195K</div>
               <div className="text-sm text-muted-foreground">{language === "am" ? "ተማሪዎች" : "Students"}</div>
             </CardContent>
           </Card>
-          <Card className="text-center dark:bg-slate-900 dark:text-white">
+          <Card className="text-center">
             <CardContent className="p-4">
               <div className="text-2xl font-bold text-abuki-primary">4.6</div>
               <div className="text-sm text-muted-foreground">{language === "am" ? "አማካይ ደረጃ" : "Avg Rating"}</div>
@@ -191,7 +191,7 @@ export default function CategoriesPage() {
         {/* Categories Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredCategories.map((category) => (
-            <Card key={category.id} className="group hover:shadow-lg transition-all duration-300 cursor-pointer dark:bg-slate-900 dark:text-white">
+            <Card key={category.id} className="group hover:shadow-lg transition-all duration-300 cursor-pointer">
               <CardHeader>
                 <div className="flex items-center justify-between mb-4">
                   <div className="text-4xl">{category.icon}</div>

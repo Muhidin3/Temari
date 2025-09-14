@@ -11,9 +11,9 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Navigation } from "@/components/navigation"
 import { Mail, Phone, MapPin, Clock, Send, MessageCircle, HelpCircle, Users, BookOpen } from "lucide-react"
-import { useLang } from "@/contexts/LanguageContext"
+
 export default function ContactPage() {
-  const {language} = useLang()
+  const [language] = useState("en")
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -107,13 +107,13 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      
+      <Navigation />
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-abuki-light via-white to-abuki-light/50 py-20 dark:from-slate-900 dark:bg-gradient-to-b">
+      <section className="relative overflow-hidden bg-gradient-to-br from-abuki-light via-white to-abuki-light/50 py-20">
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center ">
+          <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
               {language === "am" ? (
                 <span className="amharic">
@@ -138,7 +138,7 @@ export default function ContactPage() {
         <div className="grid lg:grid-cols-3 gap-12">
           {/* Contact Form */}
           <div className="lg:col-span-2">
-            <Card className="dark:bg-slate-900 dark:text-white">
+            <Card>
               <CardHeader>
                 <CardTitle className="text-2xl">{language === "am" ? "መልዕክት ይላኩ" : "Send us a Message"}</CardTitle>
                 <CardDescription>
@@ -234,13 +234,13 @@ export default function ContactPage() {
 
           {/* Contact Information */}
           <div className="space-y-6">
-            <Card className="dark:bg-slate-900 dark:text-white">
+            <Card>
               <CardHeader>
                 <CardTitle>{language === "am" ? "የመገናኛ መረጃ" : "Contact Information"}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
                 {contactInfo.map((info, index) => (
-                  <div key={index} className="flex items-start gap-4 ">
+                  <div key={index} className="flex items-start gap-4">
                     <div className="w-12 h-12 bg-abuki-light rounded-lg flex items-center justify-center flex-shrink-0">
                       <info.icon className="h-6 w-6 text-abuki-primary" />
                     </div>
@@ -256,7 +256,7 @@ export default function ContactPage() {
               </CardContent>
             </Card>
 
-            <Card className="dark:bg-slate-900 dark:text-white">
+            <Card>
               <CardHeader>
                 <CardTitle>{language === "am" ? "ሌሎች መንገዶች" : "Other Ways to Reach Us"}</CardTitle>
               </CardHeader>
@@ -289,7 +289,7 @@ export default function ContactPage() {
 
         {/* FAQ Section */}
         <div className="mt-20">
-          <div className="text-center mb-12 ">
+          <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
               {language === "am" ? "ተደጋጋሚ ጥያቄዎች" : "Frequently Asked Questions"}
             </h2>
@@ -300,9 +300,9 @@ export default function ContactPage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6 max-w-6xl mx-auto ">
+          <div className="grid md:grid-cols-2 gap-6 max-w-6xl mx-auto">
             {faqs.map((faq, index) => (
-              <Card key={index} className="hover:shadow-md transition-shadow dark:bg-slate-900 dark:text-white">
+              <Card key={index} className="hover:shadow-md transition-shadow">
                 <CardContent className="p-6">
                   <h3 className="font-semibold text-lg mb-3">{language === "am" ? faq.questionAm : faq.question}</h3>
                   <p className="text-muted-foreground">{language === "am" ? faq.answerAm : faq.answer}</p>
