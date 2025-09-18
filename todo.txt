@@ -2,3 +2,7 @@ createcourse:
 be instructor page
 cart and checkout page
 video player package
+youtube api
+thumbline preview and s3 upload
+telebirr integration try
+
