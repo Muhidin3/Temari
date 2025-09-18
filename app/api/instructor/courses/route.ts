@@ -23,6 +23,7 @@ export const GET = authMiddleware("instructor")(async (request: AuthenticatedReq
     await Category.find()
     // Get courses with pagination
     const courses = await Course.find(query)
+      .sort({ createdAt: -1 })
       .populate("category", "name nameAm")
       .lean()
 

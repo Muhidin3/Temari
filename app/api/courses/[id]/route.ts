@@ -16,6 +16,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     const course = await Course.findById(id)
       .populate("instructor", "firstName lastName avatar ")
       .populate("category", "name nameAm")
+      .populate('sections')
       .lean()
 
     const lessons = await Lesson.find({course:id})

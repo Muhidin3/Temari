@@ -1,7 +1,7 @@
 import mongoose, { Schema } from "mongoose"
-import type { IQuiz } from "@/types/database"
+import type {} from "@/types/database"
 
-const QuizSchema = new Schema<IQuiz>(
+const QuizSchema = new Schema(
   {
     course: {
       type: Schema.Types.ObjectId,
@@ -71,4 +71,4 @@ const QuizSchema = new Schema<IQuiz>(
 QuizSchema.index({ course: 1 })
 QuizSchema.index({ lesson: 1 })
 
-export default mongoose.models.Quiz || mongoose.model<IQuiz>("Quiz", QuizSchema)
+export default mongoose.models.Quiz || mongoose.model("Quiz", QuizSchema)

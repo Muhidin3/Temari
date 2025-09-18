@@ -1,4 +1,4 @@
 createcourse:
-    savedraft and publish
-    in curriculum make in each lesson a file handler to be uploaded
-    in each card component in each page make it responsive to the dark mode by setting className='dark:'
+be instructor page
+cart and checkout page
+video player package

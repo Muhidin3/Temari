@@ -14,11 +14,13 @@ import { Navigation } from "@/components/navigation"
 import { useLanguage } from "@/contexts/language-context"
 import { useAuth } from "@/contexts/auth-context"
 import { toast } from "sonner"
-import { Plus, Trash2, Play, Link, Save, Eye, DollarSign, Clock, BookOpen, GripVertical, FileText, AlertCircle, Upload } from "lucide-react"
+import { Plus, Trash2, Play, Link, Save, Eye, DollarSign, Clock, BookOpen, GripVertical, FileText, AlertCircle, Upload, Edit } from "lucide-react"
 import Afetch from "@/lib/Afetch"
 import { useNotify } from "@/contexts/notification-context"
 import { Myloading, Myloading2 } from "@/components/Myloading"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Alert, AlertDescription, AlertTitle, } from "@/components/ui/alert"
+import Section from "@/models/Section"
+import { Badge } from "@/components/ui/badge"
 
 interface Category {
   _id: string
@@ -62,6 +64,8 @@ interface Lesson {
   free: boolean
   retrived?:boolean
   _id?:string
+  file?:File
+  section?:any
 }
 
 interface Section {
@@ -85,6 +89,8 @@ export default function CourseBuilder({params}:any) {
   const [validationError,setValidationError] = useState<string |null>()
   const [validationError2,setValidationError2] = useState<string |null>()
   const {notify} = useNotify()
+  const [newSectionbtn,setNewSectionbtn] = useState(true)
+  const [newSection,setNewSection] = useState('')
  
 
   const [courseData, setCourseData] = useState<CourseData>({
@@ -113,100 +119,104 @@ export default function CourseBuilder({params}:any) {
   })
 
   const [curriculum, setCurriculum] = useState<Section[]>([
-    {
-      id: 1,
-      title: "",
-      titleAm: "",
-      lessons: [
-        {
-          id: 1,
-          title: "",
-          titleAm: "",
-          type: "video",
-          content: "",
-          duration: "",
-          free: false,
-        },
-      ],
-    },
+    // {
+    //   id: 0,
+    //   title: "",
+    //   titleAm: "",
+    //   lessons: [
+    //     {
+    //       id: 0,
+    //       title: "",
+    //       titleAm: "",
+    //       type: "video",
+    //       content: "",
+    //       duration: "",
+    //       free: false,
+    //     },
+    //   ],
+    // },
   ])
-
   const [courseSettings, setCourseSettings] = useState({
     isPublic: true,
     allowDiscussions: true,
     provideCertificate: true,
     allowDownload: false,
   })
-   //fetch the course
-  useEffect(()=>{
-    (async()=>{
-        const {id}=await params
-        const res = (await Afetch(`/api/instructor/courses/${id}`).then( async r=>await r.json()))
-        setCourseData({
-            title: res.course.title || "",
-            titleAm: res.course.titleAm || "",
-            subtitle: "",
-            subtitleAm: "",
-            description: res.course.description || "",
-            descriptionAm: res.course.descriptionAm ||"",
-            shortDescription: res.course.shortDescription ||"",
-            shortDescriptionAm: res.course.shortDescriptionAm || "",
-            category: res.course.category._id || "",
-            subcategory: '',
-            level: res.course.level ||"",
-            language: res.course.language ||"en",
-            price: "",
-            discountPrice: "",
-            thumbnail: "",
-            previewVideo: "",
-            tags: [],
-            requirements: res.course.requirements ||[""],
-            whatYouWillLearn: res.course.whatYouWillLearn || [""],
-            targetAudience:res.course.targetAudience || [""],
-            status: res.course.status ||''
-        })
-
-        const res_curriculum = await Afetch(`/api/instructor/courses/${id}/lesson`).then(async r=>await r.json().then(l=>l.lessons))
-        // console.log(res_curriculum)
-        const curr:any =[]
-
-        res.course.sections.map((section:any,i:number)=>{
-          files.push([])
-          const a = (res_curriculum.filter((lesson:any)=>lesson.section==section))
-          .map((lesson:any,index:number)=>{
-          files[i][index] = new File([],'nofile')
-          console.log(i,index)
-            return({
-                    id: index,//lesson.order,
-                    title: lesson.title,
-                    titleAm: "",
-                    type: "video",
-                    content: "",
-                    duration: "",
-                    free: lesson.isFree,
-                    retrived:true
-          })
-        })
-
-          curr.push({
-                id: i,
-                title:section,
-                titleAm: "",
-                lessons: a
-          })
-
-        })
-        setCurriculum(curr)
-        setLoading(false)
-        console.log(files)
-    })()
-  },[])
-
   // fetch categories on component mount
   useEffect(() => {
     fetchCategories()
   }, [])
 
+  useEffect(()=>{
+     (async()=>{
+      const {id} = await params
+        const res = await Afetch(`/api/instructor/courses/${id}`).then(async(d)=>await d.json())
+
+        const {title,titleAm,description,descriptionAm,sections,level,status,tags,shortDescription,shortDescriptionAm,price,requirements,whatYouWillLearn,targetAudience} = res.course
+        setCourseData({
+          title,
+          titleAm,
+          subtitle: "",
+          subtitleAm: "",
+          description,
+          descriptionAm,
+          shortDescription,
+          shortDescriptionAm,
+          sections,
+          category:res.course.category._id,
+          subcategory: "",
+          level,
+          language: "en",
+          price,
+          discountPrice: "",
+          thumbnail: "",
+          previewVideo: "",
+          tags,
+          requirements,
+          whatYouWillLearn,
+          targetAudience,
+          status
+        })
+        setLoading(false)
+
+        //sections
+        const res2 = await Afetch(`/api/instructor/courses/${id}/section`).then(async(d)=>await d.json())
+        // console.log(res2)
+
+        //lessons
+        const res3 = await Afetch(`/api/instructor/courses/${id}/lesson`).then(async(d)=>await d.json())
+        // console.log('res3',res3)
+
+        res2.sections.length!=0 && res2.sections.map(((section:any)=>{
+          const oneSectionLessons = res3.lessons.filter((lesson:any)=>lesson.section==section._id)
+          // console.log(oneSectionLessons)
+          
+          oneSectionLessons.map((lesson:any)=>{
+            lesson.id = lesson._id
+            lesson.type='Video'
+            lesson.duration='Video'
+            lesson.retrived=true
+            lesson.file=lesson.videoUrl
+            return
+            
+          })
+
+          setCurriculum((p)=>{
+            if (p.find((a)=>a.id==section._id)) return p 
+            return [{
+            id: section._id,
+            title: section.title,
+            titleAm: "",
+            lessons:oneSectionLessons
+          },...p]
+          })
+          
+        }))
+
+
+     })()
+  },[])
+ 
   // Redirect if not instructor
   useEffect(() => {
     if (user && user.role !== "instructor") {
@@ -255,15 +265,27 @@ export default function CourseBuilder({params}:any) {
     }))
   }
 
-  const addSection = () => {
+  const addSection = async () => {
+    setLoading(true)
+    const {id} = await params
+    const res = await Afetch(`/api/instructor/courses/${id}/section`,
+      {
+        method:'POST',
+        body:JSON.stringify({
+          title:newSection,
+          order:curriculum.length
+        })
+      }).then(async(data)=>await data.json());
+      
+    
     setFiles(p=>{
       return [...p,[]]
-    })
+    });
     setCurriculum([
       ...curriculum,
       {
-        id: (curriculum.pop()?.id as number) + 1,
-        title: "",
+        id: res.section._id,
+        title: res.section.title,
         titleAm: "",
         lessons: [
           {
@@ -277,10 +299,25 @@ export default function CourseBuilder({params}:any) {
           },
         ],
       },
-    ])
+    ]);
+    setNewSection('')
+    setLoading(false)
   }
 
-  const addLesson = (sectionId: number) => {
+  const deleteSection = async (_id:string)=>{
+    const {id} = await params
+    const res = await Afetch(`/api/instructor/courses/${id}/section`,
+      {
+        method:'DELETE',
+        body:JSON.stringify({
+          _id:String(_id)
+        })
+      });
+      console.log('Section Deleted',res)
+  }
+
+  const addLesson = (sectionId: any) => {
+    console.log(sectionId)
     setCurriculum(
       curriculum.map((section) =>
         section.id === sectionId
@@ -289,13 +326,14 @@ export default function CourseBuilder({params}:any) {
               lessons: [
                 ...section.lessons,
                 {
-                  id: (section.lessons.pop()?.id as number) + 1,
+                  id: (section.lessons.pop()?.id as number) + 1 || 0,
                   title: "",
                   titleAm: "",
                   type: "video",
                   content: "",
                   duration: "",
                   free: false,
+                  section:section.id
                 },
               ],
             }
@@ -311,122 +349,44 @@ export default function CourseBuilder({params}:any) {
     if (!courseData.category) return "Category is required"
     if (!courseData.level) return "Course level is required"
     if (!courseData.price || Number.parseFloat(courseData.price) < 0) return "Valid price is required"
-    if (!courseData.thumbnail) return "Course thumbnail is required"
+    if (!thumbnail) return "Course thumbnail is required"
     if (courseData.requirements.filter((req) => req.trim()).length === 0) return "At least one requirement is needed"
     if (courseData.whatYouWillLearn.filter((obj) => obj.trim()).length === 0)
       return "At least one learning objective is needed"
     if (courseData.targetAudience.filter((aud) => aud.trim()).length === 0)
       return "At least one target audience is needed"
-
+    if (curriculum.length ==0 ) return 'You need to have at least one Section with a lesson'
+    curriculum.map((section)=>{
+      if (section.lessons.length ==0 ) return `Section ${section.title} must have at least one lesson`
+    })
     return null
   }
 
-  const handleFileChange = useCallback(
-      (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
-          const file = e.target.files[0];
-          setThumbnail(file);
-
-          // Auto-detect file type
-          const extension = file.name.split(".").pop()?.toLowerCase();
-
-          // Validate file
-          if (["png", "jpg", "jepg", "skp", "3dm"].includes(extension || "")) {
-            setValidationError(null);
-          } else {
-            setThumbnail(null)
-            setValidationError(
-              "Unsupported file format. Please upload image only."
-            );
-          }
-        }
-      },
-      []
-    );
-
-  const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    const files = e.dataTransfer.files;
-    if (files && files[0]) {
-      const file = files[0];
-      setThumbnail(file);
-
-      // Trigger the same validation as file input
-      const extension = file.name.split(".").pop()?.toLowerCase();
-
-      if (["jpg", "png", "jepg", "skp", "3dm"].includes(extension || "")) {
-        setValidationError(null);
-      } else {
-        setThumbnail(null)
-        setValidationError(
-          "Unsupported file format. Please Upload image only."
-        );
-      }
-    }
-  }, []);
-
-  const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-  }, []);
-
-  const handleFileChange2 = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      if (e.target.files && e.target.files[0]) {
-        const file = e.target.files[0];
-        setPreviewVideo(file);
-
-        // Auto-detect file type
-        const extension = file.name.split(".").pop()?.toLowerCase();
-
-        // Validate file
-        if (["mp4", "mov", "avi", "mkv", "wmv","flv","webm","m4v"].includes(extension || "")) {
-          setValidationError2(null);
-        } else {
-          setPreviewVideo(null)
-          setValidationError2(
-            "Unsupported file format. Please upload image only."
-          );
-        }
-      }
-    },
-    []
-    );
-
-  const handleDrop2 = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    const files = e.dataTransfer.files;
-    if (files && files[0]) {
-      const file = files[0];
-      setThumbnail(file);
-
-      // Trigger the same validation as file input
-      const extension = file.name.split(".").pop()?.toLowerCase();
-
-      if (["jpg", "png", "jepg", "skp", "3dm"].includes(extension || "")) {
-        setValidationError2(null);
-      } else {
-        setPreviewVideo(null)
-        setValidationError2(
-          "Unsupported file format. Please Upload image only."
-        );
-      }
-    }
-  }, []);
-
-  const handleDragOver2 = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-  }, []);
-
+  const handleDeleteLesson = async (id:any,newCurriculum:any)=>{
+    setLoading(true)
+    // console.log(newCurriculum)
+    // console.log(id)
+    const courseId = (await params).id
+    const res = await Afetch(`/api/instructor/courses/${courseId}/lesson`,{method:'DELETE',body:JSON.stringify({id})})
+    // console.log(res)
+    console.log(await res.json())
+    // setCurriculum(newCurriculum)
+    setLoading(false)
+  }
 
   const uploadCurriculum = async ()=>{
-    console.log(files)
+    //preventing already uploaded lesson from saving again
+     const newcurr = curriculum.map((section)=>{
+      section.lessons = section.lessons.filter(lesson=>!lesson.retrived)
+      return section
+    })
     try {
       const {id} = await params
       const form = new FormData()
-      form.append('curriculum',JSON.stringify(curriculum))
-      curriculum.map((section,i)=>{
+      form.append('curriculum',JSON.stringify(newcurr))
+      newcurr.map((section,i)=>{
           section.lessons.map((lesson,j)=>{
-            form.append(`file_${i}_${j}`,files[i][j]||'nofile')
+            form.append(`file_${i}_${j}`,lesson.file||'nofile')
           })
       })
       form.append('thumbnail',thumbnail || 'nofile')
@@ -447,9 +407,12 @@ export default function CourseBuilder({params}:any) {
       console.log(error)
     }
 
+    setLoading(false)
+
   }
 
   const saveDraft = async () => {
+    setLoading(true)
     uploadCurriculum()
     try {
       setSaving(true)
@@ -462,8 +425,7 @@ export default function CourseBuilder({params}:any) {
         whatYouWillLearn: courseData.whatYouWillLearn.filter((obj) => obj.trim()),
         targetAudience: courseData.targetAudience.filter((aud) => aud.trim()),
         tags: courseData.tags.filter((tag) => tag.trim()),
-        status: "draft",
-        sections:curriculum.map(section=>section.title)
+        sections:curriculum.map(section=>section.id)
       }
 
       const {id} = await params
@@ -495,6 +457,15 @@ export default function CourseBuilder({params}:any) {
   }
 
   const publishCourse = async () => {
+    if (validateCourse()) {
+      console.log(validateCourse())
+    }else{
+      courseData.status='published'
+      saveDraft()
+      console.log('published')
+    }
+    
+    return
     try {
       console.log(thumbnail)
       console.log(previewVideo)
@@ -563,10 +534,10 @@ export default function CourseBuilder({params}:any) {
   }
 
  
-if (loading) return <div className="">
-  <Navigation/>
-  <Myloading/>
-</div>
+// if (loading) return <div className="">
+//   <Navigation/>
+//   <Myloading/>
+// </div>
 
 
 
@@ -577,15 +548,23 @@ if (loading) return <div className="">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold mb-2 dark:text-white">
-              {language === "am" ? "አዲስ ኮርስ ፍጠር" : "Create New Course"}
-            </h1>
-            <p className="text-muted-foreground dark:text-slate-400">
-              {language === "am" ? "ተማሪዎችን ለማስተማር አዲስ ኮርስ ይፍጠሩ" : "Create a new course to teach students"}
-            </p>
+          <div className="flex flex-row justify-around">
+            <div className="">
+              <h1 className="text-3xl font-bold mb-2 dark:text-white">
+                {language === "am" ? "አዲስ ኮርስ ፍጠር" : "Edit Course"}
+              </h1>
+              <p className="text-muted-foreground dark:text-slate-400">
+                {language === "am" ? "ተማሪዎችን ለማስተማር አዲስ ኮርስ ይፍጠሩ" : "Edit course to teach students"}
+              </p>
+            </div>
+            <div className={`p-3 ${loading?'block':'hidden'}`}>
+              <Myloading2/>
+            </div>
           </div>
           <div className="flex gap-2">
+          <div className="flex flex-row p-2">
+            <Badge>{courseData.status.toLocaleUpperCase()}</Badge>
+          </div>
             <Button variant="outline" disabled={saving}>
               <Eye className="mr-2 h-4 w-4" />
               {language === "am" ? "ቅድመ እይታ" : "Preview"}
@@ -616,7 +595,7 @@ if (loading) return <div className="">
           {/* Main Content */}
           <div className="lg:col-span-3">
             <Tabs defaultValue="basics" className="space-y-6">
-              <TabsList className="grid w-full grid-cols-5 dark:bg-slate-800">
+              <TabsList className="grid w-full grid-cols-5 dark:bg-slate-800 sticky top-20 z-20">
                 <TabsTrigger value="basics">{language === "am" ? "መሰረታዊ" : "Basics"}</TabsTrigger>
                 <TabsTrigger value="curriculum">{language === "am" ? "ስርዓተ ትምህርት" : "Curriculum"}</TabsTrigger>
                 <TabsTrigger value="pricing">{language === "am" ? "ዋጋ" : "Pricing"}</TabsTrigger>
@@ -925,7 +904,7 @@ if (loading) return <div className="">
                           <div className="flex items-center gap-2">
                             <GripVertical className="h-5 w-5 text-muted-foreground cursor-move" />
                             <div className="flex-1 grid md:grid-cols-2 gap-4">
-                              <Input
+                              {/* <Input
                                 placeholder={language === "am" ? "የክፍል ርዕስ (እንግሊዝኛ)" : "Section title (English)"}
                                 value={section.title}
                                 className="dark:bg-slate-800"
@@ -934,8 +913,9 @@ if (loading) return <div className="">
                                   newCurriculum[sectionIndex].title = e.target.value
                                   setCurriculum(newCurriculum)
                                 }}
-                              />
-                              <Input
+                              /> */}
+                              <p className="rounded-sm p-2 "><span className="text-slate-600">Section:</span> {section.title}</p>
+                              {/* <Input
                                 placeholder={language === "am" ? "የክፍል ርዕስ (አማርኛ)" : "Section title (Amharic)"}
                                 value={section.titleAm} 
                                 onChange={(e) => {
@@ -944,12 +924,15 @@ if (loading) return <div className="">
                                   setCurriculum(newCurriculum)
                                 }}
                                 className="amharic dark:bg-slate-800"
-                              />
+                              /> */}
                             </div>
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => setCurriculum(curriculum.filter((_, i) => i !== sectionIndex))}
+                              onClick={() => {
+                                setCurriculum(curriculum.filter((_, i) => i !== sectionIndex))
+                                deleteSection(String(section.id))
+                              }}
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
@@ -957,8 +940,10 @@ if (loading) return <div className="">
                         </CardHeader>
                         <CardContent>
                           <div className="space-y-4">
-                            {section.lessons.map((lesson, lessonIndex) => (
+                            {section.lessons.map((lesson, lessonIndex) => 
+                            (
                               <div key={lesson.id} className="border rounded-lg">
+
                                 {lesson.retrived ? 
                                 <>
                                 <div  className="flex items-center gap-2 p-4 ">
@@ -1031,7 +1016,8 @@ if (loading) return <div className="">
                                   }}
                                   disabled
                                 />
-                                <div className="flex items-center gap-2">
+                                {/* free switch */}
+                                {/* <div className="flex items-center gap-2">
                                   <Switch
                                     checked={lesson.free}
                                     onCheckedChange={(checked) => {
@@ -1042,7 +1028,10 @@ if (loading) return <div className="">
                                     disabled
                                   />
                                   <Label className="text-xs">{language === "am" ? "ነፃ" : "Free"}</Label>
-                                </div>
+                                </div> */}
+                                <Button variant={"outline"} className="">
+                                  <Edit/>
+                                </Button>
                                 <Button
                                   variant="outline"
                                   size="sm"
@@ -1051,13 +1040,24 @@ if (loading) return <div className="">
                                     newCurriculum[sectionIndex].lessons = newCurriculum[sectionIndex].lessons.filter(
                                       (_, i) => i !== lessonIndex
                                     )
-                                    setCurriculum(newCurriculum)
+                                    // setCurriculum(newCurriculum)
+                                    handleDeleteLesson(lesson._id,newCurriculum)
                                   }}
+                                  disabled={loading}
                                 >
                                   <Trash2 className="h-4 w-4" />
                                 </Button>
                                 </div>
-                                
+                                  <div className="p-2 ">
+                                    {/* <Input type="file" 
+                                    placeholder="pleeeeeee"
+                                    className="dark:bg-slate-800"
+                                  /> */}
+                                    <p className="dark:bg-slate-800 rounded-sm p-2 pl-4">
+                                      <span className="text-slate-500">File Chosen: </span>
+                                      {lesson.file as unknown as string}
+                                      </p>
+                                  </div>
                                 </>:
                                 <>
                                 <div  className="flex items-center gap-2 p-4 ">
@@ -1146,12 +1146,13 @@ if (loading) return <div className="">
                                       (_, i) => i !== lessonIndex
                                     )
                                     setCurriculum(newCurriculum)
+                                    
                                   }}
+                                  disabled={loading}
                                 >
                                   <Trash2 className="h-4 w-4" />
                                 </Button>
                                 </div>
-                                </>}
                                 <div className="m-2">
                                   <Input 
                                   type="file"
@@ -1159,14 +1160,18 @@ if (loading) return <div className="">
                                     // const newCurriculum = [...curriculum]
                                     // newCurriculum[sectionIndex].lessons[lessonIndex].content = e.target.value
                                     // setCurriculum(newCurriculum)
-                                    setFiles((p)=>{
-                                      p[sectionIndex][lessonIndex]=e.target.files![0]
-                                      return p
-                                    })
+                                    // setFiles((p)=>{
+                                    //   p[sectionIndex][lessonIndex]=e.target.files![0]
+                                    //   return p
+                                    // })
+                                    const newCurriculum = [...curriculum]
+                                    newCurriculum[sectionIndex].lessons[lessonIndex].file = e.target.files![0]
+                                    setCurriculum(newCurriculum)
                                   }}
                                   className="dark:bg-slate-800"
                                   />
                                 </div>
+                                </>}
                               </div>
                             )
                             )}
@@ -1183,10 +1188,27 @@ if (loading) return <div className="">
                         </CardContent>
                       </Card>
                     ))}
-                    <Button type="button" variant="outline" onClick={addSection} className="w-full">
-                      <Plus className="mr-2 h-4 w-4" />
-                      {language === "am" ? "አዲስ ክፍል ጨምር" : "Add New Section"}
-                    </Button>
+                    <div className="flex flex-row gap-x-3">
+                            <Input 
+                            className=""
+                            placeholder="Section Title"
+                            value={newSection}
+                            onChange={(e)=>{
+                              setNewSection(e.target.value)
+                              if(e.target.value.length >0){
+                                setNewSectionbtn(false)
+                              }else{
+                                setNewSectionbtn(true)
+                              }
+                            }}
+
+                            />
+
+                          <Button type="button" variant="outline" onClick={addSection} className="w-full" disabled={newSectionbtn}>
+                            <Plus className="mr-2 h-4 w-4" />
+                            {language === "am" ? "አዲስ ክፍል ጨምር" : "Add New Section"}
+                          </Button>
+                    </div>
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -1279,8 +1301,25 @@ if (loading) return <div className="">
                     <div className="grid w-full gap-1.5">
                   <Label htmlFor="file">Course Thumbnail</Label>
                   <div className="flex flex-col items-center justify-center rounded-md border border-dashed p-6 dark:bg-slate-800 dark:border-green-700/30"
-                       onDrop={handleDrop}
-                       onDragOver={handleDragOver}
+                       onDrop={(e)=>{e.preventDefault();
+                                const files = e.dataTransfer.files;
+                                if (files && files[0]) {
+                                  const file = files[0];
+                                  setThumbnail(file);
+
+                                  // Trigger the same validation as file input
+                                  const extension = file.name.split(".").pop()?.toLowerCase();
+
+                                  if (["jpg", "png", "jepg", "skp", "3dm"].includes(extension || "")) {
+                                    setValidationError(null);
+                                  } else {
+                                    setThumbnail(null)
+                                    setValidationError(
+                                      "Unsupported file format. Please Upload image only."
+                                    );
+                                  }
+                                }}}
+                       onDragOver={(e)=>{e.preventDefault()}}
                        onClick={()=>document.getElementById("file-input")?.click()}>
 
                     {thumbnail ? (
@@ -1320,7 +1359,25 @@ if (loading) return <div className="">
                   type="file"
                   className="hidden"
                   accept=".png,.jep,.jpeg,.gif,.bmp,.webp,.tiff,.tif,.heic,.svg"
-                  onChange={handleFileChange}
+                  onChange={(e)=>{
+                    if (e.target.files && e.target.files[0]) {
+                              const file = e.target.files[0];
+                              setThumbnail(file);
+
+                              // Auto-detect file type
+                              const extension = file.name.split(".").pop()?.toLowerCase();
+
+                              // Validate file
+                              if (["png", "jpg", "jepg", "skp", "3dm"].includes(extension || "")) {
+                                setValidationError(null);
+                              } else {
+                                setThumbnail(null)
+                                setValidationError(
+                                  "Unsupported file format. Please upload image only."
+                                );
+                              }
+                            }
+                  }}
                 />
                   {validationError && (
                     <Alert variant="destructive" className="mt-2">
@@ -1335,8 +1392,27 @@ if (loading) return <div className="">
                     <div className="grid w-full gap-1.5">
                       <Label htmlFor="file">Preview Video</Label>
                       <div className="flex flex-col items-center justify-center rounded-md border border-dashed p-6 dark:bg-slate-800 dark:border-green-700/30"
-                          onDrop={handleDrop2}
-                          onDragOver={handleDragOver2}
+                          onDrop={(e)=>{
+                            e.preventDefault();
+                            const files = e.dataTransfer.files;
+                            if (files && files[0]) {
+                              const file = files[0];
+                              setThumbnail(file);
+
+                              // Trigger the same validation as file input
+                              const extension = file.name.split(".").pop()?.toLowerCase();
+
+                              if (["jpg", "png", "jepg", "skp", "3dm"].includes(extension || "")) {
+                                setValidationError2(null);
+                              } else {
+                                setPreviewVideo(null)
+                                setValidationError2(
+                                  "Unsupported file format. Please Upload image only."
+                                );
+                              }
+                            }
+                          }}
+                          onDragOver={(e)=>{e.preventDefault();}}
                           onClick={()=>document.getElementById("file-inputpreview")?.click()}>
 
                         {previewVideo ? (
@@ -1376,7 +1452,25 @@ if (loading) return <div className="">
                       type="file"
                       accept=".mp4,.mov,.avi,.mkv,.wmv,.flv,.webm,.m4v"
                       className="hidden"
-                      onChange={handleFileChange2}
+                      onChange={(e)=>{
+                        if (e.target.files && e.target.files[0]) {
+                                const file = e.target.files[0];
+                                setPreviewVideo(file);
+
+                                // Auto-detect file type
+                                const extension = file.name.split(".").pop()?.toLowerCase();
+
+                                // Validate file
+                                if (["mp4", "mov", "avi", "mkv", "wmv","flv","webm","m4v"].includes(extension || "")) {
+                                  setValidationError2(null);
+                                } else {
+                                  setPreviewVideo(null)
+                                  setValidationError2(
+                                    "Unsupported file format. Please upload image only."
+                                  );
+                                }
+                              }
+                      }}
                     />
                       {validationError2 && (
                         <Alert variant="destructive" className="mt-2">
@@ -1613,7 +1707,7 @@ if (loading) return <div className="">
                   </div>
                   <div className="flex items-center gap-2">
                     <div
-                      className={`w-4 h-4 rounded-full ${courseData.thumbnail ? "bg-green-500" : "bg-muted dark:bg-slate-600"}`}
+                      className={`w-4 h-4 rounded-full ${thumbnail ? "bg-green-500" : "bg-muted dark:bg-slate-600"}`}
                     ></div>
                     <span className="text-sm dark:text-white">
                       {language === "am" ? "ኮርስ ምስል" : "Course thumbnail"}

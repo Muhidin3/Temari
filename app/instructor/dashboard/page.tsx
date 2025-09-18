@@ -341,6 +341,12 @@ export default function InstructorDashboard() {
                             </div>
                             <div className="flex gap-2">
                               <Button size="sm" variant="outline" asChild>
+                                <Link href={`/courses/${course.id}`}>
+                                  <Eye className="h-4 w-4 mr-1" />
+                                  {language === "am" ? "eyew" : "Preview"}
+                                </Link>
+                              </Button>
+                              <Button size="sm" variant="outline" asChild>
                                 <Link href={`/instructor/courses/${course.id}/edit`}>
                                   <Edit className="h-4 w-4 mr-1" />
                                   {language === "am" ? "አርትዕ" : "Edit"}

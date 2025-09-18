@@ -1,7 +1,6 @@
 import mongoose, { Schema } from "mongoose"
-import type { IPayment } from "@/types/database"
 
-const PaymentSchema = new Schema<IPayment>(
+const PaymentSchema = new Schema(
   {
     student: {
       type: Schema.Types.ObjectId,
@@ -50,4 +49,4 @@ PaymentSchema.index({ course: 1 })
 PaymentSchema.index({ transactionId: 1 })
 PaymentSchema.index({ status: 1 })
 
-export default mongoose.models.Payment || mongoose.model<IPayment>("Payment", PaymentSchema)
+export default mongoose.models.Payment || mongoose.model("Payment", PaymentSchema)

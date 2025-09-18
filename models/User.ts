@@ -38,6 +38,10 @@ const userSchema = new Schema<IUser>(
       enum: ["student", "instructor", "admin"],
       default: "student",
     },
+    enrolledCourses:[{
+      type:Schema.ObjectId,
+      ref:'Course'
+    }],
     avatar: {
       type: String,
       default: "",

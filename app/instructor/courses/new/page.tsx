@@ -227,8 +227,8 @@ export default function CourseBuilder() {
     if (!courseData.shortDescription.trim()) return "Short description is required"
     if (!courseData.category) return "Category is required"
     if (!courseData.level) return "Course level is required"
-    if (!courseData.price || Number.parseFloat(courseData.price) < 0) return "Valid price is required"
-    if (!courseData.thumbnail) return "Course thumbnail is required"
+    // if (!courseData.price || Number.parseFloat(courseData.price) < 0) return "Valid price is required"
+    // if (!courseData.thumbnail) return "Course thumbnail is required"
     if (courseData.requirements.filter((req) => req.trim()).length === 0) return "At least one requirement is needed"
     if (courseData.whatYouWillLearn.filter((obj) => obj.trim()).length === 0)
       return "At least one learning objective is needed"
@@ -240,14 +240,13 @@ export default function CourseBuilder() {
 
   const saveDraft = async () => {
     try {
+      const validate = validateCourse()
+      // console.log('validate is ------------------>',validate)
+      if (validate) {
+        console.log(validate)
+        return
+      }
       setSaving(true)
-
-      // const validationError = validateCourse()
-      // if (validationError) {
-      //   toast.error(validationError)
-      //   console.log(validationError)
-      //   return
-      // }
 
       const coursePayload = {
         ...courseData,
@@ -367,11 +366,11 @@ export default function CourseBuilder() {
             </p>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" disabled={saving}>
+            {/* <Button variant="outline" disabled={saving}>
               <Eye className="mr-2 h-4 w-4" />
               {language === "am" ? "ቅድመ እይታ" : "Preview"}
-            </Button>
-            <Button variant="outline" onClick={saveDraft} disabled={saving}>
+            </Button> */}
+            <Button onClick={saveDraft} disabled={saving}>
               <Save className="mr-2 h-4 w-4" />
               {saving
                 ? language === "am"
@@ -381,7 +380,7 @@ export default function CourseBuilder() {
                   ? "ረቂቅ አስቀምጥ"
                   : "Save Draft"}
             </Button>
-            <Button onClick={publishCourse} disabled={saving} className="bg-abuki-primary hover:bg-abuki-accent">
+            {/* <Button onClick={publishCourse} disabled={saving} className="bg-abuki-primary hover:bg-abuki-accent">
               {saving
                 ? language === "am"
                   ? "በማተም ላይ..."
@@ -389,15 +388,15 @@ export default function CourseBuilder() {
                 : language === "am"
                   ? "ኮርስ አትም"
                   : "Publish Course"}
-            </Button>
+            </Button> */}
           </div>
         </div>
 
         <div className="grid lg:grid-cols-4 gap-8">
           {/* Main Content */}
-          <div className="lg:col-span-3">
-            <Tabs defaultValue="basics" className="space-y-6">
-              <TabsList className="grid w-full grid-cols-5">
+          <div className="lg:col-span-3 ">
+            <Tabs defaultValue="basics" className="space-y-6 ">
+              <TabsList className="grid w-full grid-cols-5 dark:bg-slate-800">
                 <TabsTrigger value="basics">{language === "am" ? "መሰረታዊ" : "Basics"}</TabsTrigger>
                 <TabsTrigger value="curriculum">{language === "am" ? "ስርዓተ ትምህርት" : "Curriculum"}</TabsTrigger>
                 <TabsTrigger value="pricing">{language === "am" ? "ዋጋ" : "Pricing"}</TabsTrigger>
@@ -691,7 +690,7 @@ export default function CourseBuilder() {
                 </Card>
               </TabsContent>
 
-                <TabsContent value="curriculum">
+                {/* <TabsContent value="curriculum">
                 <Card className="dark:bg-slate-900 dark:text-white">
                   <CardHeader>
                     <CardTitle>{language === "am" ? "ስርዓተ ትምህርት" : "Course Curriculum"}</CardTitle>
@@ -864,8 +863,14 @@ export default function CourseBuilder() {
                     </Button>
                   </CardContent>
                 </Card>
-              </TabsContent>
+              </TabsContent> */}
 
+              <TabsContent value="curriculum">
+                  <div className="min-h-[100px] text-center place-content-center border-2 border-slate-700  rounded-lg text-slate-300">
+                    Please Save the Course Before Adding Curriculum
+                  </div>
+              </TabsContent>
+              
               <TabsContent value="pricing">
                 <Card className="dark:bg-slate-800 dark:border-slate-700">
                   <CardHeader>

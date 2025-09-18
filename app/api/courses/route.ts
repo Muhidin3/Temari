@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
     // Build query
     const query: any = {
       status: "published",
-      isApproved: true,
+      // isApproved: true,
     }
 
     if (category) {

@@ -50,8 +50,8 @@ const courseSchema = new Schema<ICourse>(
       ref: "Category",
     },
     sections:[{
-      type: String,
-      trim: true,
+      type: Schema.Types.ObjectId,
+      ref:'Section'
     }],
     level: {
       type: String,

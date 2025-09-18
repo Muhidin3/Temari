@@ -70,6 +70,9 @@ export default function CourseDetailPage({params}:{params:{id:string}}) {
     level: "Beginner",
     language: "English/Amharic",
     lastUpdated: "2024-01-15",
+    whatYouWillLearn:[],
+    requirements:[],
+    targetAudience:[],
     certificate: true,
     lifetime: true,
     mobile: true,
@@ -221,6 +224,9 @@ export default function CourseDetailPage({params}:{params:{id:string}}) {
         level: course.level,
         language: course.language,
         lastUpdated: "2024-01-15",
+        whatYouWillLearn:course.whatYouWillLearn,
+        requirements:course.requirements,
+        targetAudience:course.targetAudience,
         certificate: true,
         lifetime: true,
         mobile: true,
@@ -230,9 +236,8 @@ export default function CourseDetailPage({params}:{params:{id:string}}) {
 
       // console.log(res.lessons)
       const curr:any[] = []
-
       course.sections.map((section:any)=>{
-        const lessons_ = (res.lessons.filter((lesson:any)=>lesson.section==section)).map((lesson:any,index:number)=>({
+        const lessons_ = (res.lessons.filter((lesson:any)=>lesson.section==section._id)).map((lesson:any,index:number)=>({
           title: lesson.title,
           titleAm: "ዌብ ዲቨሎፕመንት ምንድን ነው?",
           duration: "15 min",
@@ -240,9 +245,9 @@ export default function CourseDetailPage({params}:{params:{id:string}}) {
           free: lesson.isFree,
         }))
         curr.push({
-          title: section,
+          title: section.title,
           titleAm: "የዌብ ዲቨሎፕመንት መግቢያ",
-          duration: "2 hours",
+          duration: "2 hours", 
           lectures: lessons_.length,
           lessons: lessons_
         })
@@ -351,14 +356,7 @@ export default function CourseDetailPage({params}:{params:{id:string}}) {
                     <div>
                       <h3 className="font-semibold mb-3">{language === "am" ? "ምን ይማራሉ" : "What You'll Learn"}</h3>
                       <div className="grid md:grid-cols-2 gap-3">
-                        {[
-                          "Build responsive websites with HTML, CSS, and JavaScript",
-                          "Create dynamic web applications with React",
-                          "Develop backend APIs with Node.js and Express",
-                          "Work with databases (MongoDB and SQL)",
-                          "Deploy applications to the cloud",
-                          "Understand modern development workflows",
-                        ].map((item, index) => (
+                        {course.whatYouWillLearn.map((item, index) => (
                           <div key={index} className="flex items-start gap-2">
                             <Check className="h-5 w-5 text-abuki-primary mt-0.5 flex-shrink-0" />
                             <span className="text-sm">{item}</span>
@@ -372,9 +370,7 @@ export default function CourseDetailPage({params}:{params:{id:string}}) {
                     <div>
                       <h3 className="font-semibold mb-3">{language === "am" ? "መስፈርቶች" : "Requirements"}</h3>
                       <ul className="space-y-2 text-sm text-muted-foreground">
-                        <li>• No prior programming experience needed</li>
-                        <li>• A computer with internet connection</li>
-                        <li>• Willingness to learn and practice</li>
+                        {course.requirements.map((req,i)=>(<li key={i}>• {req}</li>))}
                       </ul>
                     </div>
 
@@ -385,10 +381,7 @@ export default function CourseDetailPage({params}:{params:{id:string}}) {
                         {language === "am" ? "ይህ ኮርስ ለማን ነው" : "Who This Course Is For"}
                       </h3>
                       <ul className="space-y-2 text-sm text-muted-foreground">
-                        <li>• Complete beginners who want to learn web development</li>
-                        <li>• Students looking to build a career in tech</li>
-                        <li>• Entrepreneurs who want to build their own websites</li>
-                        <li>• Anyone interested in modern web technologies</li>
+                        {course.targetAudience.map((req,i)=>(<li key={i}>• {req}</li>))}
                       </ul>
                     </div>
                   </CardContent>

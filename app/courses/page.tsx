@@ -92,7 +92,7 @@ export default function CoursesPage() {
   const [totalPages, setTotalPages] = useState(1)
   const [totalCourses, setTotalCourses] = useState(0)
 
-  const AfetchCourses = async () => {
+  const fetchCourses = async () => {
     try {
       setLoading(true)
       setError(null)
@@ -110,11 +110,13 @@ export default function CoursesPage() {
       if (priceRange[1] < 10000) params.append("maxPrice", priceRange[1].toString())
       if (sortBy) params.append("sort", sortBy)
 
+      console.log(params)
       const response = await Afetch(`/api/courses?${params}`)
       const data: ApiResponse = await response.json()
+      console.log(data)
 
       if (data.success) {
-        setCourses(data.data)
+        setCourses(data.data) 
         setCategories(data.meta.categories)
         setTotalPages(data.meta.pagination.pages)
         setTotalCourses(data.meta.pagination.total)
@@ -130,17 +132,17 @@ export default function CoursesPage() {
   }
 
   useEffect(() => {
-    AfetchCourses()
+    fetchCourses()
   }, [currentPage, selectedCategory, selectedLevel, selectedLanguage, sortBy])
  
   const handleSearch = () => {
     setCurrentPage(1)
-    AfetchCourses()
+    fetchCourses()
   }
 
   const handleFilterChange = () => {
     setCurrentPage(1)
-    AfetchCourses()
+    fetchCourses()
   }
 
   const clearFilters = () => {
@@ -151,7 +153,7 @@ export default function CoursesPage() {
     setPriceRange([0, 10000])
     setSortBy("createdAt")
     setCurrentPage(1)
-    AfetchCourses()
+    fetchCourses()
   }
 
   const formatPrice = (price: number) => {
@@ -200,7 +202,7 @@ export default function CoursesPage() {
           <div className="text-center">
             <h2 className="text-2xl font-bold mb-4">{language === "am" ? "ስህተት ተከስቷል" : "Something went wrong"}</h2>
             <p className="text-muted-foreground mb-4">{error}</p>
-            <Button onClick={AfetchCourses}>{language === "am" ? "እንደገና ሞክር" : "Try Again"}</Button>
+            <Button onClick={fetchCourses}>{language === "am" ? "እንደገና ሞክር" : "Try Again"}</Button>
           </div>
         </div>
       </div>

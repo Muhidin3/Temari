@@ -8,12 +8,12 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
 import { NotificationProvider } from "@/contexts/notification-context"
 
-const inter = Inter({ subsets: ["latin"] })
+// const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "Abuki - Ethiopian Learning Platform",
   description: "Learn and grow with Ethiopia's premier online learning platform",
-    generator: 'v0.app'
+    // generator: 'v0.app'
 }
 
 export default function RootLayout({
@@ -23,7 +23,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+      {/* <body className={inter.className}> */}
+      <body>
         <NotificationProvider>
           <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
             <LanguageProvider>
